@@ -48,8 +48,11 @@ jobs:
       - run: npm run lint
 
   test-npm:
-    name: 'test-npm'
+    name: 'test-npm (react ${{ matrix.react-version }})'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        react-version: ['18', '19']
     steps:
       - name: checkout
         uses: actions/checkout@v6
@@ -58,6 +61,9 @@ jobs:
         with:
           enable_npm: true
       - run: npm ci
+      - name: Install React ${{ matrix.react-version }}
+        if: matrix.react-version != '18'
+        run: npm install react@${{ matrix.react-version }} react-dom@${{ matrix.react-version }} @types/react@${{ matrix.react-version }} @types/react-dom@${{ matrix.react-version }} --save-dev
       - run: npm run test
 
   type-check:
